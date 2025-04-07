@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our T-Shirts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            font-weight: 300;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .shirt-card {
+            border: 6px solid rgb(2, 30, 83);
+            border-radius: 20px;
+            padding: 0;
+            width: 250px;
+            text-align: center;
+            background-color: white;
+        }
+
+        .shirt-card img {
+            border-radius: 20px;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .shirt-card h3 {
+            text-align: left;
+            margin-left: 10px;
+            font-weight: 300;
+            font-size: 1.4em;
+            color: rgb(2, 30, 83);
+        }
+
+        .shirt-card .card-colors {
+            text-align: left;
+            margin-left: 10px;
+            font-weight: 300;
+            font-size: 0.9em;
+            color: rgb(170, 168, 168);
+        }
+
+        .btn {
+            background-color: rgb(2, 30, 83);
+            color: white;
+            padding: 10px;
+            margin: 8px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        /* Модальное окно */
+        #quickViewModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+        }
+
+        #quickViewContent {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            text-align: center;
+        }
+
+        #quickViewContent img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        #closeModal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Our T-Shirts</h1>
+    <div class="container" id="shirtsContainer"></div>
+
+    <!-- Модальное окно -->
+    <div id="quickViewModal">
+        <div id="quickViewContent">
+            <span id="closeModal">&times;</span>
+            <img id="modalImage" src="" alt="">
+            <h3 id="modalTitle"></h3>
+            <p id="modalColors"></p>
+        </div>
+    </div>
+
+    <script src="shirts.js"></script>
+    <script>
+        function generateShirts() {
+            const container = document.getElementById("shirtsContainer");
+            shirts.forEach((shirt, index) => {
+                const shirtCard = document.createElement("div");
+                shirtCard.classList.add("shirt-card");
+
+                // Картинка
+                const img = document.createElement("img");
+                img.src = (shirt.colors?.white?.front || shirt.default?.front) || "shirt_images/default.png";
+                img.alt = shirt.name || "Untitled Shirt";
+
+                // Название
+                const title = document.createElement("h3");
+                title.textContent = shirt.name || "No name provided";
+
+                // Цвета
+                const colors = document.createElement("p");
+                colors.className = "card-colors";
+                const colorCount = Object.keys(shirt.colors || {}).length;
+                colors.textContent =
+                    colorCount > 0
+                        ? `Available in ${colorCount} color${colorCount > 1 ? "s" : ""}`
+                        : "No colors listed";
+
+                // Кнопки
+                const quickViewBtn = document.createElement("button");
+                quickViewBtn.classList.add("btn");
+                quickViewBtn.textContent = "Quick View";
+                quickViewBtn.addEventListener("click", () => showQuickView(shirt));
+
+                const seePageBtn = document.createElement("button");
+                seePageBtn.classList.add("btn");
+                seePageBtn.textContent = "See Page";
+
+                // Сборка
+                shirtCard.append(img, title, colors, quickViewBtn, seePageBtn);
+                container.appendChild(shirtCard);
+            });
+        }
+
+        function showQuickView(shirt) {
+            const modal = document.getElementById("quickViewModal");
+            document.getElementById("modalImage").src = (shirt.colors?.white?.front || shirt.default?.front) || "shirt_images/default.png";
+            document.getElementById("modalTitle").textContent = shirt.name || "No name";
+            const colorCount = Object.keys(shirt.colors || {}).length;
+            document.getElementById("modalColors").textContent = colorCount > 0
+                ? `Available in ${colorCount} color${colorCount > 1 ? 's' : ''}`
+                : "No colors listed";
+            modal.style.display = "flex";
+        }
+
+        // Закрытие модалки
+        document.addEventListener("DOMContentLoaded", () => {
+            generateShirts();
+            document.getElementById("closeModal").addEventListener("click", () => {
+                document.getElementById("quickViewModal").style.display = "none";
+            });
+            window.addEventListener("click", (e) => {
+                const modal = document.getElementById("quickViewModal");
+                if (e.target === modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
