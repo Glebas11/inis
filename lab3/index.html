@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our T-Shirts</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      font-weight: 300;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .shirt-card {
+      border: 6px solid rgb(2, 30, 83);
+      border-radius: 20px;
+      padding: 0;
+      width: 250px;
+      text-align: center;
+      background-color: white;
+    }
+
+    .shirt-card img {
+      border-radius: 20px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .shirt-card h3 {
+      text-align: left;
+      margin-left: 10px;
+      font-weight: 300;
+      font-size: 1.4em;
+      color: rgb(2, 30, 83);
+    }
+
+    .shirt-card .card-colors {
+      text-align: left;
+      margin-left: 10px;
+      font-weight: 300;
+      font-size: 0.9em;
+      color: rgb(170, 168, 168);
+    }
+
+    .btn {
+      background-color: rgb(2, 30, 83);
+      color: white;
+      padding: 10px;
+      margin: 8px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+
+    /* Modal styles */
+    #quickViewModal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .close-btn {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 24px;
+      color: #999;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Our T-Shirts</h1>
+  <div class="container" id="shirtsContainer"></div>
+
+  <!-- Модальное окно -->
+  <div id="quickViewModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <img id="modalImage" src="" alt="T-Shirt" />
+      <h3 id="modalTitle"></h3>
+      <p id="modalColors"></p>
+    </div>
+  </div>
+
+  <script src="shirts.js"></script>
+  <script>
+    function generateShirts() {
+      const container = document.getElementById('shirtsContainer');
+      shirts.forEach(shirt => {
+        const shirtCard = document.createElement('div');
+        shirtCard.classList.add('shirt-card');
+
+        const img = document.createElement('img');
+        img.src = shirt.colors?.white?.front || shirt.default?.front || '';
+        img.alt = shirt.name || 'No name';
+
+        const title = document.createElement('h3');
+        title.textContent = shirt.name || 'No name';
+
+        const colors = document.createElement('p');
+        colors.className = 'card-colors';
+        const colorCount = Object.keys(shirt.colors || {}).length;
+        colors.textContent = `Available in ${colorCount} color${colorCount !== 1 ? 's' : ''}`;
+
+        const quickViewBtn = document.createElement('button');
+        quickViewBtn.classList.add('btn');
+        quickViewBtn.textContent = 'Quick View';
+        quickViewBtn.addEventListener('click', () => {
+          showModal(shirt);
+        });
+
+        const seePageBtn = document.createElement('button');
+        seePageBtn.classList.add('btn');
+        seePageBtn.textContent = 'See Page';
+        seePageBtn.addEventListener('click', () => {
+          localStorage.setItem('selectedShirt', JSON.stringify(shirt));
+          window.location.href = 'details.html';
+        });
+
+        shirtCard.append(img, title, colors, quickViewBtn, seePageBtn);
+        container.appendChild(shirtCard);
+      });
+    }
+
+    function showModal(shirt) {
+      const modal = document.getElementById('quickViewModal');
+      document.getElementById('modalImage').src =
+        shirt.colors?.white?.front || shirt.default?.front || '';
+      document.getElementById('modalTitle').textContent = shirt.name || 'No name';
+      const colorCount = Object.keys(shirt.colors || {}).length;
+      document.getElementById('modalColors').textContent =
+        `Available in ${colorCount} color${colorCount !== 1 ? 's' : ''}`;
+      modal.style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('quickViewModal').style.display = 'none';
+    }
+
+    window.addEventListener('click', function (e) {
+      const modal = document.getElementById('quickViewModal');
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    generateShirts();
+  </script>
+</body>
+
+</html>
